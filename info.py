@@ -25,7 +25,7 @@ OWNER_USERNAME = environ.get('OWNER_USERNAME', 'Sandymaiwait') # without @ or ht
 USERNAME = environ.get('USERNAME', "https://t.me/Sandymaiwait") # ADMIN USERNAME
 
 # Database Channel 
-CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '').split()]
+CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1002694840394').split()]
 
 # ForceSub Channel & Log Channels
 AUTH_CHANNEL = int(environ.get('AUTH_CHANNEL', '-1002260068200'))
@@ -36,10 +36,10 @@ LOG_VR_CHANNEL = int(environ.get('LOG_VR_CHANNEL', '-1002395784504'))
 
 # MongoDB 
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Sandy4:Sandy4@cluster0.ogfoxmb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-DATABASE_NAME = environ.get('DATABASE_NAME', "cluster0")
+DATABASE_NAME = environ.get('DATABASE_NAME', "sandy")
 
 # Files index database url
-FILES_DATABASE = environ.get('FILES_DATABASE', "-1002694840394")
+FILES_DATABASE = environ.get('FILES_DATABASE', "mongodb+srv://Rpsing:Rpsing2003@rpsing.thqdyo6.mongodb.net/?retryWrites=true&w=majority&appName=Rpsing")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'sandy')
 
 # Other Channel's
