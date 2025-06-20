@@ -195,7 +195,7 @@ async def next_page(bot, query):
     if settings["link"]:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</b>"""
     else:
         btn = [[InlineKeyboardButton(text=f"📁 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", url=f'https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}\n\n<blockquote>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</blockquote>'),]
                 for file in files
@@ -318,7 +318,7 @@ async def season_search(client: Client, query: CallbackQuery):
     if settings["link"]:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</b>"""
     else:
         btn = [[
                 InlineKeyboardButton(text=f"🔗 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", callback_data=f'cfiles#{reqnxt}#{file.file_id}'),]
@@ -415,7 +415,7 @@ async def year_search(client: Client, query: CallbackQuery):
     if settings["link"]:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</b>"""
     else:
         btn = [[
                 InlineKeyboardButton(text=f"🔗 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", callback_data=f'cfiles#{reqnxt}#{file.file_id}'),]
@@ -512,7 +512,7 @@ async def quality_search(client: Client, query: CallbackQuery):
     if settings["link"]:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</b>"""
     else:
         btn = [[
                 InlineKeyboardButton(text=f"🔗 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", callback_data=f'cfiles#{reqnxt}#{file.file_id}'),]
@@ -618,7 +618,7 @@ async def lang_search(client: Client, query: CallbackQuery):
     if settings["link"]:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</b>"""
     else:
         btn = [[
                 InlineKeyboardButton(text=f"🔗 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", callback_data=f'cfiles#{reqnxt}#{file.file_id}'),]
