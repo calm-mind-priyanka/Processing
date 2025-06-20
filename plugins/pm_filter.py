@@ -1609,43 +1609,49 @@ async def advantage_spell_chok(message):
         except:
             pass
         return
-
-
-
 # Footer text
-    FOOTER = "\n\n<code>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</code>_movie_list_or_not_found(message, movies, search, script):
-        if not movies:
-            google = search.replace(" ", "+")
-            button = [[
-                InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url await.reply_text(
-                text=script.I_CUDNT.format(search),
-                reply_markup=InlineKeyboardMarkup(button)
-            )
-            await asyncio.sleep(120)
-            await k.delete()
-            try:
-                await message.delete()
-            except:
-            pass
-            return
-    
-    user = message.from_user.id if message.frommovie.movieID}#{user}")]
-        for movie in movies
-    ]
-    buttons.append(
-        [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
+FOOTER = "\n\n<code>𝚃𝚑𝚒𝚜 𝙼𝙴𝚂𝙰𝙶𝙴 𝚆𝚒𝚕𝚕 𝙱𝙴 𝙳𝙴𝙻𝙴𝚃𝙴𝙳 𝙰𝙵𝚃𝙴𝚁 20 𝙼𝙸𝙽𝚄𝚃𝙴𝚂 𝚃𝙾 𝙰𝚅𝙾𝙸𝙳 𝙲𝙾𝙿𝚈𝚁𝙸𝙶𝙷𝚃𝚂 ©️</code>"
+
+# Movie list or not found logic
+if not movies:
+    google = search.replace(" ", "+")
+    button = [[
+        InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url=f"https://www.google.com/search?q={google}")
+    ]]
+    k = await message.reply_text(
+        text=script.I_CUDNT.format(search),
+        reply_markup=InlineKeyboardMarkup(button)
     )
-    
-    # Footer add kiya gaya hai yahan!
-    d = await message.reply_text(
-        text=script.CUDNT_FND.format(message.from_user.mention) + FOOTER,
-        reply_markup=InlineKeyboardMarkup(buttons),
-        reply_to_message_id=message.id,
-        parse_mode="html"
-    )
-    await asyncio.sleep(1200)  # 20 minutes
-    await d.delete()
+    await asyncio.sleep(120)
+    await k.delete()
     try:
         await message.delete()
     except:
         pass
+    return
+
+# Buttons for movie list
+buttons = [
+    [
+        InlineKeyboardButton(text=movie["title"], callback_data=f"movie_{movie['id']}")
+    ] for movie in movies
+]
+
+buttons.append(
+    [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
+)
+
+# Final reply
+d = await message.reply_text(
+    text=script.CUDNT_FND.format(message.from_user.mention) + FOOTER,
+    reply_markup=InlineKeyboardMarkup(buttons),
+    reply_to_message_id=message.id,
+    parse_mode="html"
+)
+await asyncio.sleep(1200)  # 20 minutes
+await d.delete()
+try:
+    await message.delete()
+except:
+    passg
+
