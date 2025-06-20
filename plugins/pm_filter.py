@@ -326,7 +326,7 @@ async def season_search(client: Client, query: CallbackQuery):
               ]
    
     btn.insert(0,[
-	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")),
+	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}"),
         InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}")
         ])
     btn.insert(1, [
@@ -424,7 +424,7 @@ async def year_search(client: Client, query: CallbackQuery):
         
    
     btn.insert(0,[
-	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")),
+	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}"),
         InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}")
         ])
     btn.insert(1, [
@@ -521,7 +521,7 @@ async def quality_search(client: Client, query: CallbackQuery):
         
  
     btn.insert(0,[
-	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")),
+	InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}"),
         InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}")
         ])
     btn.insert(1, [
@@ -626,7 +626,7 @@ async def lang_search(client: Client, query: CallbackQuery):
               ]
         
     btn.insert(0, [
-        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}"),
         InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}")
         ])
     btn.insert(1, [
@@ -1446,7 +1446,7 @@ async def auto_filter(client, msg, spoll=False , pm_mode = False):
     if offset != "":
         if total_results >= MAX_BTN:
             btn.insert(0,[
-                InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")),
+                InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}"),
                 InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}")
                 ])
             btn.insert(1, [
