@@ -1609,47 +1609,32 @@ async def advantage_spell_chok(message):
         except:
             pass
         return
-# Somewhere above in your file:
-async def auto_filter(client, message):
-
-    # Baaki pura code ab yahan hona chahiye
-    FOOTER = "\n\n<code>This MESAGE Will BE DELETED AFTER 20 MINUTES TO AVOID COPYRIGHTS ©️</code>"
-
     if not movies:
         google = search.replace(" ", "+")
-        button = [[
-            InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url=f"https://www.google.com/search?q={google}")
-        ]]
-        k = await message.reply_text(
-            text=script.I_CUDNT.format(search),
-            reply_markup=InlineKeyboardMarkup(button)
-        )
-        await asyncio.sleep(120)
-        await k.delete()
-        try:
-            await message.delete()
-        except:
+	button = [[
+	    InlineKeyboardButton("🔍 ᴄʜᴇᴄᴋ sᴘᴇʟʟɪɴɢ ᴏɴ ɢᴏᴏɢʟᴇ 🔍", url=f"https://www.google.com/search?q={google}")
+	]]
+	k = await message.reply_text(text=script.I_CUDNT.format(search), reply_markup=InlineKeyboardMarkup(button))
+	await asyncio.sleep(120)
+	await k.delete()
+	try:
+	    await message.delete()
+	except:
             pass
-        return
-
-    buttons = [
-        [
-            InlineKeyboardButton(text=movie["title"], callback_data=f"movie_{movie['id']}")
-        ] for movie in movies
-    ]
-    buttons.append(
-        [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
-    )
-
-    d = await message.reply_text(
-        text=script.CUDNT_FND.format(message.from_user.mention) + FOOTER,
-        reply_markup=InlineKeyboardMarkup(buttons),
-        reply_to_message_id=message.id,
-        parse_mode="html"
-    )
-    await asyncio.sleep(1200)
-    await d.delete()
-    try:
-        await message.delete()
-    except:
-        pass
+	return
+    user = message.from_user.id if message.from_user else 0
+	       buttons = [[
+		   InlineKeyboardButton(text=movie.get('title'), callback_data=f"spol#{movie.movieID}#{user}")
+	       ]
+		   for movie in movies	 
+	       ]
+               buttons.append(
+		   [InlineKeyboardButton(text="🚫 ᴄʟᴏsᴇ 🚫", callback_data='close_data')]
+	       )
+               d = await message.reply_text(text=script.CUDNT_FND.format(message.from_user.mention), reply_markup=InlineKeyboardMarkup(buttons), reply_to_message_id=message.id)
+               await asyncio.sleep(120)  
+               await d.delete()
+               try:
+		   await message.delete()
+	       except:
+                   pass
