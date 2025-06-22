@@ -200,61 +200,53 @@ async def next_page(bot, query):
         btn = [[InlineKeyboardButton(text=f"📁 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", url=f'https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}'),]
                 for file in files
               ]
-    btn.append([
-    InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-    InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
-])
-btn.append([
-    InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-])
-
-if 0 < offset <= int(MAX_BTN):
-    off_set = 0
-elif offset == 0:
-    off_set = None
-else:
-    off_set = offset - int(MAX_BTN)
-
-if total > int(MAX_BTN):
-    if n_offset == 0:
-        btn.append([
-            InlineKeyboardButton("BACK", callback_data=f"next_{req}_{key}_{off_set}"),
-            InlineKeyboardButton(f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-            InlineKeyboardButton("NO MORE PAGE", callback_data="pages#")
+    btn.insert(0,[
+	InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
         ])
-    elif off_set is None:
-        btn.append([
-            InlineKeyboardButton(f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-            InlineKeyboardButton("NEXT >>", callback_data=f"next_{req}_{key}_{n_offset}")
-        ])
+    btn.insert(1, [
+        InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ ", callback_data=f"qualities#{key}#{offset}#{req}"),
+	    InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")
+    ])    
+
+    if 0 < offset <= int(MAX_BTN):
+        off_set = 0
+    elif offset == 0:
+        off_set = None
     else:
-        btn.append([
-            InlineKeyboardButton("BACK", callback_data=f"next_{req}_{key}_{off_set}"),
-            InlineKeyboardButton(f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-            InlineKeyboardButton("NEXT >>", callback_data=f"next_{req}_{key}_{n_offset}")
-        ])
-    btn.append([
-        InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-    ])
-else:
-    btn.append([
-        InlineKeyboardButton("NO MORE PAGE", callback_data="pages#")
-    ])
+        off_set = offset - int(MAX_BTN)
+    if n_offset == 0:
 
-if settings["link"]:
-    links = ""
-    for file_num, file in enumerate(files, start=offset+1):
-        links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
-    await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
-    return
-
-try:
-    await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
-except MessageNotModified:
-    pass
-
-await query.answer()    
-
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"),
+             InlineKeyboardButton(f"ᴘᴀɢᴇ {math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages")]
+        )
+    elif off_set is None:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"next_{req}_{key}_{n_offset}")])
+    else:
+        btn.append(
+            [
+                InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"),
+                InlineKeyboardButton(f"{math.ceil(int(offset) / int(MAX_BTN)) + 1} / {math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
+                InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"next_{req}_{key}_{n_offset}")
+            ],
+        )
+    if settings["link"]:
+        links = ""
+        for file_num, file in enumerate(files, start=offset+1):
+            links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), file.file_name.split()))}</a></b>"""
+        await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
+        return        
+    try:
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+    except MessageNotModified:
+        pass
+    await query.answer()
+    
 @Client.on_callback_query(filters.regex(r"^seasons#"))
 async def seasons_cb_handler(client: Client, query: CallbackQuery):
     _, key, offset, req = query.data.split("#")
@@ -334,49 +326,38 @@ async def season_search(client: Client, query: CallbackQuery):
                    for file in files
               ]
    
-    btn.append([
-    InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-    InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
-])
-btn.append([
-    InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-])
+    btn.insert(0,[
+	InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
+        ])
+    btn.insert(1, [
+        InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ ", callback_data=f"qualities#{key}#{offset}#{req}"),
+	InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")
+    ])    
+    
+    if n_offset== '':
+        btn.append(
+            [InlineKeyboardButton(text="🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", callback_data="buttons")]
+        )
+    elif n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"season_search#{season}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+            ])
+    elif offset==0:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}",callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"season_search#{season}#{key}#{n_offset}#{orginal_offset}#{req}"),])
+    else:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"season_search#{season}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"season_search#{season}#{key}#{n_offset}#{orginal_offset}#{req}"),])
 
-if n_offset == '':
     btn.append([
-        InlineKeyboardButton("NO MORE PAGE", callback_data="buttons")
-    ])
-elif n_offset == 0:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"season_search#{season}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages")
-    ])
-elif offset == 0:
-    btn.append([
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"season_search#{season}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-else:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"season_search#{season}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"season_search#{season}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-
-btn.append([
-    InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-])
-btn.append([
-    InlineKeyboardButton("BACK TO MAIN PAGE", callback_data=f"next_{req}_{key}_{orginal_offset}")
-])
-
-await query.message.edit_text(
-    cap + links + js_ads,
-    disable_web_page_preview=True,
-    parse_mode=enums.ParseMode.HTML,
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-return
+        InlineKeyboardButton(text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{orginal_offset}"),])
+    await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
+    return
 
 @Client.on_callback_query(filters.regex(r"^years#"))
 async def years_cb_handler(client: Client, query: CallbackQuery):
@@ -444,49 +425,38 @@ async def year_search(client: Client, query: CallbackQuery):
               ]
         
    
-    btn.append([
-    InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-    InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
-])
-btn.append([
-    InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-])
+    btn.insert(0,[
+	InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
+        ])
+    btn.insert(1, [
+        InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ ", callback_data=f"qualities#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")
+    ])    
+    
+    if n_offset== '':
+        btn.append(
+            [InlineKeyboardButton(text="🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", callback_data="buttons")]
+        )
+    elif n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"years_search#{year}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+            ])
+    elif offset==0:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}",callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"years_search#{year}#{key}#{n_offset}#{orginal_offset}#{req}"),])
+    else:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"years_search#{year}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"years_search#{year}#{key}#{n_offset}#{orginal_offset}#{req}"),])
 
-if n_offset == '':
     btn.append([
-        InlineKeyboardButton("NO MORE PAGE", callback_data="buttons")
-    ])
-elif n_offset == 0:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"years_search#{year}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages")
-    ])
-elif offset == 0:
-    btn.append([
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"years_search#{year}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-else:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"years_search#{year}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"years_search#{year}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-
-btn.append([
-    InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-])
-btn.append([
-    InlineKeyboardButton("BACK TO MAIN PAGE", callback_data=f"next_{req}_{key}_{orginal_offset}")
-])
-
-await query.message.edit_text(
-    cap + links + js_ads,
-    disable_web_page_preview=True,
-    parse_mode=enums.ParseMode.HTML,
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-return
+        InlineKeyboardButton(text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{orginal_offset}"),])
+    await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
+    return
 
 @Client.on_callback_query(filters.regex(r"^qualities#"))
 async def quality_cb_handler(client: Client, query: CallbackQuery):
@@ -553,49 +523,38 @@ async def quality_search(client: Client, query: CallbackQuery):
               ]
         
  
-    btn.append([
-    InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-    InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
-])
-btn.append([
-    InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-])
+    btn.insert(0,[
+	InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
+        ])
+    btn.insert(1, [
+        InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}"),
+	InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ", callback_data=f"languages#{key}#{offset}#{req}"),
+    ])    
+    if n_offset== '':
+        btn.append(
+            [InlineKeyboardButton(text="🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", callback_data="buttons")]
+        )
+    elif n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"quality_search#{qul}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+            ])
+    elif offset==0:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}",callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"quality_search#{qul}#{key}#{n_offset}#{orginal_offset}#{req}"),])
+    else:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"quality_search#{qul}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"quality_search#{qul}#{key}#{n_offset}#{orginal_offset}#{req}"),])
 
-if n_offset == '':
     btn.append([
-        InlineKeyboardButton("NO MORE PAGE", callback_data="buttons")
-    ])
-elif n_offset == 0:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"quality_search#{qul}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages")
-    ])
-elif offset == 0:
-    btn.append([
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"quality_search#{qul}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-else:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"quality_search#{qul}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"quality_search#{qul}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-
-btn.append([
-    InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-])
-btn.append([
-    InlineKeyboardButton("BACK TO MAIN PAGE", callback_data=f"next_{req}_{key}_{orginal_offset}")
-])
-
-await query.message.edit_text(
-    cap + links + js_ads,
-    disable_web_page_preview=True,
-    parse_mode=enums.ParseMode.HTML,
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-return
+        InlineKeyboardButton(text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{orginal_offset}"),])
+    await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
+    return
+    await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_callback_query(filters.regex(r"^languages#"))
 async def languages_cb_handler(client: Client, query: CallbackQuery):
@@ -671,49 +630,38 @@ async def lang_search(client: Client, query: CallbackQuery):
               ]
         
 
-    btn.append([
-    InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-    InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
-])
-btn.append([
-    InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-])
+    btn.insert(0,[
+	InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
+        ])
+    btn.insert(1, [
+        InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ", callback_data=f"qualities#{key}#{offset}#{req}"),
+	InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+        InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ", callback_data=f"languages#{key}#{offset}#{req}")
+    ])    
+    if n_offset== '':
+        btn.append(
+            [InlineKeyboardButton(text="🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", callback_data="buttons")]
+        )
+    elif n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"lang_search#{lang}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+            ])
+    elif offset==0:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}",callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"lang_search#{lang}#{key}#{n_offset}#{orginal_offset}#{req}"),])
+    else:
+        btn.append(
+            [InlineKeyboardButton("⋞ ʙᴀᴄᴋ", callback_data=f"lang_search#{lang}#{key}#{offset- int(MAX_BTN)}#{orginal_offset}#{req}"),
+             InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages",),
+             InlineKeyboardButton("ɴᴇxᴛ ⋟", callback_data=f"lang_search#{lang}#{key}#{n_offset}#{orginal_offset}#{req}"),])
 
-if n_offset == '':
     btn.append([
-        InlineKeyboardButton("NO MORE PAGE", callback_data="buttons")
-    ])
-elif n_offset == 0:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"lang_search#{lang}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages")
-    ])
-elif offset == 0:
-    btn.append([
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"lang_search#{lang}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-else:
-    btn.append([
-        InlineKeyboardButton("BACK", callback_data=f"lang_search#{lang}#{key}#{offset - int(MAX_BTN)}#{orginal_offset}#{req}"),
-        InlineKeyboardButton(f"{math.ceil(offset / int(MAX_BTN)) + 1}/{math.ceil(total / int(MAX_BTN))}", callback_data="pages"),
-        InlineKeyboardButton("NEXT >>", callback_data=f"lang_search#{lang}#{key}#{n_offset}#{orginal_offset}#{req}")
-    ])
-
-btn.append([
-    InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-])
-btn.append([
-    InlineKeyboardButton("BACK TO MAIN PAGE", callback_data=f"next_{req}_{key}_{orginal_offset}")
-])
-
-await query.message.edit_text(
-    cap + links + js_ads,
-    disable_web_page_preview=True,
-    parse_mode=enums.ParseMode.HTML,
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-return
+        InlineKeyboardButton(text="⋞ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{orginal_offset}"),])
+    await query.message.edit_text(cap + links + js_ads, disable_web_page_preview=True, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(btn))
+    return
+    await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_callback_query(filters.regex(r"^spol"))
 async def advantage_spoll_choker(bot, query):
@@ -1498,38 +1446,36 @@ async def auto_filter(client, msg, spoll=False , pm_mode = False):
         for file_num, file in enumerate(files, start=1):
             links += f"""<b>\n\n{file_num}. <a href=https://telegram.dog/{temp.U_NAME}?start=file_{message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {formate_file_name(file.file_name)}</a></b>"""
     else:
-    btn = [[InlineKeyboardButton(
-        text=f"{get_size(file.file_size)} {formate_file_name(file.file_name)}",
-        url=f'https://telegram.dog/{temp.U_NAME}?start=file_{message.chat.id}_{file.file_id}'
-    )] for file in files]
-
-if offset != "":
-    if total_results >= MAX_BTN:
-        if some_condition:
-            btn.append([
-                InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}"),
-                InlineKeyboardButton("QUALITY", callback_data=f"qualities#{key}#{offset}#{req}")
+        btn = [[InlineKeyboardButton(text=f"🔗 {get_size(file.file_size)}≽ {formate_file_name(file.file_name)}", url=f'https://telegram.dog/{temp.U_NAME}?start=file_{message.chat.id}_{file.file_id}'),]
+               for file in files
+              ]
+    if offset != "":
+        if total_results >= MAX_BTN:
+            btn.insert(0,[
+                InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
             ])
-            btn.append([
-                InlineKeyboardButton("SEASON", callback_data=f"seasons#{key}#{offset}#{req}")
-            ])
-            btn.append([
-                InlineKeyboardButton("NO MORE PAGE", callback_data="pages#")
-            ])
-            btn.append([
-                InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
-            ])
+            btn.insert(1, [
+                InlineKeyboardButton("ǫᴜᴀʟɪᴛʏ ", callback_data=f"qualities#{key}#{offset}#{req}"),
+                InlineKeyboardButton("ꜱᴇᴀꜱᴏɴ", callback_data=f"seasons#{key}#{offset}#{req}"),
+                InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ ", callback_data=f"languages#{key}#{offset}#{req}")
+            ])            
         else:
-            btn.append([
-                InlineKeyboardButton("LANGUAGE", callback_data=f"languages#{key}#{offset}#{req}")
+            btn.insert(0,[
+                InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
+                InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇ", callback_data=f"languages#{key}#{offset}#{req}")
             ])
-            btn.append([
-                InlineKeyboardButton("NO MORE PAGE", callback_data="pages#")
+            btn.insert(1,[
+                InlineKeyboardButton("🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", user_id=ADMINS[0])
             ])
-            btn.append([
-                InlineKeyboardButton("SEND ALL", callback_data=f"send_all#{key}")
+    else:
+        btn.insert(0,[
+            InlineKeyboardButton("📥 sᴇɴᴅ ᴀʟʟ ғɪʟᴇs 📥", callback_data=f"send_all#{key}"),
             ])
-   
+
+        btn.insert(1,[
+            InlineKeyboardButton("🚸 ɴᴏ ᴍᴏʀᴇ ᴘᴀɢᴇs 🚸", user_id=ADMINS[0])
+        ])
+                             
     if spoll:
         m = await msg.message.edit(f"<b><code>{search}</code> ɪs ꜰᴏᴜɴᴅ ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ ꜰᴏʀ ꜰɪʟᴇs 📫</b>")
         await asyncio.sleep(1.2)
