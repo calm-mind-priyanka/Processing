@@ -1412,7 +1412,7 @@ async def auto_filter(client, msg, spoll=False , pm_mode = False):
         search = message.text
         chat_id = message.chat.id
         settings = await get_settings(chat_id)
-        searching_msg = await msg.reply_text(f'🔎 sᴇᴀʀᴄʜɪɴɢ {search}')
+        searching_msg = await msg.reply_text(f'🎯 {search} 𝚜𝚎𝚊𝚛𝚌𝚑𝚒𝚗𝚐.... ')
         files, offset, total_results = await get_search_results(search)
         await searching_msg.delete()
         if not files:
