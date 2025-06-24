@@ -1,19 +1,16 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-# Only you (admin) can access /modify
 BOT_OWNER = [6046055058]
 user_settings = {}
 
-# /modify in PM only
 @Client.on_message(filters.private & filters.command("modify"))
 async def modify_command(client, message: Message):
     if message.from_user.id not in BOT_OWNER:
         return await message.reply("🚫 You are not authorized.")
     await settings_menu(client, message)
 
-# Settings menu layout
-async def settings_menu(client, message, group_title="Your Group", group_id="PRIVATE"):
+async def settings_menu(client, message, group_title="YOUR GROUP", group_id="PRIVATE"):
     text = f"""👑 GROUP - {group_title}  
 🆔 ID - {group_id}  
 
@@ -33,12 +30,10 @@ SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
 
-# Close settings menu
 @Client.on_callback_query(filters.regex("close"))
 async def close_settings(client, query: CallbackQuery):
     await query.message.delete()
 
-# Handle button logic
 @Client.on_callback_query()
 async def handle_settings_buttons(client, query: CallbackQuery):
     user_id = query.from_user.id
@@ -62,9 +57,10 @@ async def handle_settings_buttons(client, query: CallbackQuery):
 
     if data == "force_channel":
         channels = settings["force_channels"]
-        txt = f"**FORCE CHANNELS:** {', '.join(channels) if channels else 'None'}"
+        txt = "**ʜᴇʀᴇ ʏᴏᴜ ᴄᴀɴ ᴍᴀɴᴀɢᴇ ꜰᴏʀᴄᴇ ꜱᴜʙꜱᴄʀɪʙᴇ ᴄʜᴀɴɴᴇʟ IDꜱ.**\n\n"
+        txt += f"**ꜰᴏʀᴄᴇ ᴄʜᴀɴɴᴇʟꜱ -** {', '.join(channels) if channels else '❌ NONE'}"
         btn = [
-            [InlineKeyboardButton("SET CHANNELS", callback_data="set_force_channel"),
+            [InlineKeyboardButton("SET CHANNEL", callback_data="set_force_channel"),
              InlineKeyboardButton("DELETE CHANNEL", callback_data="del_force_channel")],
             [InlineKeyboardButton("<< BACK", callback_data="back_main")]
         ]
@@ -72,7 +68,7 @@ async def handle_settings_buttons(client, query: CallbackQuery):
 
     elif data == "set_force_channel":
         settings["awaiting_input"] = {"type": "force_channel"}
-        await query.message.edit("SEND CHANNEL ID(S) (space separated). /cancel to stop.")
+        await query.message.edit("**ꜱᴇɴᴅ ᴍᴇ ᴄʜᴀɴɴᴇʟ ID(S) ᴡɪᴛʜ ꜱᴘᴀᴄᴇ.**\n**ᴀɴᴅ ᴍᴀᴋᴇ ꜱᴜʀᴇ @Jhonwickrobot ɪꜱ ᴀᴅᴍɪɴ ɪɴ ᴀʟʟ ᴄʜᴀɴɴᴇʟꜱ.**\n/cancel - ᴄᴀɴᴄᴇʟ ᴛʜɪꜱ ᴘʀᴏᴄᴇss.")
 
     elif data == "del_force_channel":
         settings["force_channels"] = []
@@ -81,30 +77,56 @@ async def handle_settings_buttons(client, query: CallbackQuery):
 
     elif data == "max_results":
         settings["awaiting_input"] = {"type": "max_results"}
-        await query.message.edit("SEND MAX RESULTS NUMBER. /cancel to stop.")
+        await query.message.edit("**ꜱᴇɴᴅ ᴍᴀx ʀᴇꜱᴜʟᴛꜱ (ɴᴜᴍʙᴇʀ).**\n/cancel - ᴄᴀɴᴄᴇʟ ᴛʜɪꜱ ᴘʀᴏᴄᴇss.")
 
     elif data == "auto_delete":
         settings["auto_delete"] = not settings["auto_delete"]
-        await query.answer("✅ TOGGLED AUTO DELETE")
-        await settings_menu(client, query.message)
+        await query.message.edit(f"""**ʜᴇʀᴇ ʏᴏᴜ ᴄᴀɴ ᴍᴀɴᴀɢᴇ ɢɪᴠᴇɴ ꜰɪʟᴇꜱ ᴅᴇʟᴇᴛᴇ ꜱᴇᴛᴛɪɴɢ.**
+
+ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ - {"✅ ON" if settings["auto_delete"] else "❌ OFF"}
+ᴅᴇʟᴇᴛᴇ ᴛɪᴍᴇ - 20 ᴍɪɴᴜᴛᴇꜱ""",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("SET TIME", callback_data="set_delete_time"),
+                 InlineKeyboardButton("OFF DELETE", callback_data="auto_delete")],
+                [InlineKeyboardButton("<< BACK", callback_data="back_main")]
+            ])
+        )
+
+    elif data == "set_delete_time":
+        settings["awaiting_input"] = {"type": "auto_delete_time"}
+        await query.message.edit("**ꜱᴇɴᴅ ᴛɪᴍᴇ ʟɪᴋᴇ - `1h` ᴏʀ `15m`.**\n/cancel - ᴄᴀɴᴄᴇʟ ᴛʜɪꜱ ᴘʀᴏᴄᴇss.")
 
     elif data == "imdb_toggle":
         settings["imdb"] = not settings["imdb"]
-        await query.answer("✅ TOGGLED IMDB")
-        await settings_menu(client, query.message)
+        imdb_status = "✅ ON" if settings["imdb"] else "❌ OFF"
+        await query.message.edit(f"""**ʜᴇʀᴇ ʏᴏᴜ ᴄᴀɴ ᴍᴀɴᴀɢᴇ ɪᴍᴅʙ ꜱᴇᴛᴛɪɴɢꜱ.**
+
+IMDB POSTER - {imdb_status}
+IMDB TEMPLATE - 🏷 {{"{title}"}} | ᴘᴏᴡᴇʀᴇᴅ ʙʏ {{"{group}"}}
+
+""", reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("SET TEMPLATE", callback_data="set_imdb_template"),
+             InlineKeyboardButton("DEFAULT TEMPLATE", callback_data="default_imdb_template")],
+            [InlineKeyboardButton("ON POSTER", callback_data="imdb_toggle")],
+            [InlineKeyboardButton("<< BACK", callback_data="back_main")]
+        ]))
 
     elif data == "spell_toggle":
         settings["spell_check"] = not settings["spell_check"]
-        await query.answer("✅ TOGGLED SPELL CHECK")
-        await settings_menu(client, query.message)
+        status = "✅" if settings["spell_check"] else "❌"
+        await query.message.edit(f"**SPELL CHECK -** {status}",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("TURN OFF" if settings["spell_check"] else "TURN ON", callback_data="spell_toggle")],
+                [InlineKeyboardButton("<< BACK", callback_data="back_main")]
+            ])
+        )
 
     elif data == "result_mode":
         new_mode = "button" if settings["result_mode"] == "link" else "link"
         settings["result_mode"] = new_mode
-        await query.message.edit(
-            f"RESULT MODE - {'🖇 LINKS' if new_mode == 'link' else '🎯 BUTTONS'}",
+        await query.message.edit(f"**RESULT MODE - {'🎯 BUTTONS' if new_mode == 'button' else '🖇 LINKS'}**",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("TOGGLE AGAIN", callback_data="result_mode")],
+                [InlineKeyboardButton("SET LINK MODE" if new_mode == "button" else "SET BUTTON MODE", callback_data="result_mode")],
                 [InlineKeyboardButton("<< BACK", callback_data="back_main")]
             ])
         )
@@ -114,7 +136,7 @@ async def handle_settings_buttons(client, query: CallbackQuery):
         second = settings["file_mode"]["second_verify"]
         new_mode = "shortlink" if mode == "verify" else "verify"
         settings["file_mode"] = {"type": new_mode, "second_verify": second}
-        txt = f"MODE: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}"
+        txt = f"**FILES MODE: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}**"
         btn = [
             [InlineKeyboardButton("TOGGLE MODE", callback_data="file_mode")],
             [InlineKeyboardButton(f"2ND VERIFY {'✅' if second else '❌'}", callback_data="toggle_second_verify")],
@@ -128,17 +150,18 @@ async def handle_settings_buttons(client, query: CallbackQuery):
 
     elif data == "caption":
         settings["awaiting_input"] = {"type": "caption"}
-        await query.message.edit("SEND NEW CAPTION. /cancel to stop.")
+        await query.message.edit("SEND ME NEW FILE CAPTION.\n/cancel - CANCEL THIS PROCESS.")
 
     elif data == "set_shortner":
         sl = settings["shortlink"]
-        txt = f"""SHORTLINKS:
-1 - {sl.get('1', '❌ Not Set')}
-2 - {sl.get('2', '❌ Not Set')}"""
+        txt = f"""**SHORTLINK SETTINGS**
+
+1ST SHORTLINK - {sl.get('1', '❌ NOT SET')}
+2ND SHORTLINK - {sl.get('2', '❌ NOT SET')}"""
         btn = [
-            [InlineKeyboardButton("SET 1", callback_data="shortner_1"),
-             InlineKeyboardButton("SET 2", callback_data="shortner_2")],
-            [InlineKeyboardButton("DELETE ALL", callback_data="del_shortner")],
+            [InlineKeyboardButton("1ST SHORTNER", callback_data="shortner_1"),
+             InlineKeyboardButton("2ND SHORTNER", callback_data="shortner_2")],
+            [InlineKeyboardButton("DELETE SHORTNER", callback_data="del_shortner")],
             [InlineKeyboardButton("<< BACK", callback_data="back_main")]
         ]
         await query.message.edit(txt, reply_markup=InlineKeyboardMarkup(btn))
@@ -146,22 +169,23 @@ async def handle_settings_buttons(client, query: CallbackQuery):
     elif data.startswith("shortner_"):
         which = data.split("_")[1]
         settings["awaiting_input"] = {"type": "shortner", "which": which}
-        await query.message.edit("SEND SHORTLINK (without https). /cancel to stop.")
+        await query.message.edit("SEND SHORTLINK URL WITHOUT https://\n/cancel - CANCEL THIS PROCESS.")
 
     elif data == "del_shortner":
         settings["shortlink"] = {}
-        await query.message.edit("✅ SHORTNERS CLEARED.",
+        await query.message.edit("✅ SHORTNERS DELETED.",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     elif data == "tutorial_link":
         tl = settings["tutorial_links"]
-        txt = f"""TUTORIAL LINKS:
-1 - {tl.get('first', '❌ Not Set')}
-2 - {tl.get('second', '❌ Not Set')}"""
+        txt = f"""**TUTORIAL LINKS**
+
+1ST - {tl.get('first', '❌ NOT SET')}
+2ND - {tl.get('second', '❌ NOT SET')}"""
         btn = [
-            [InlineKeyboardButton("SET 1", callback_data="tutorial_1"),
-             InlineKeyboardButton("SET 2", callback_data="tutorial_2")],
-            [InlineKeyboardButton("DELETE ALL", callback_data="del_tutorial")],
+            [InlineKeyboardButton("1ST TUTORIAL", callback_data="tutorial_1"),
+             InlineKeyboardButton("2ND TUTORIAL", callback_data="tutorial_2")],
+            [InlineKeyboardButton("DELETE TUTORIAL", callback_data="del_tutorial")],
             [InlineKeyboardButton("<< BACK", callback_data="back_main")]
         ]
         await query.message.edit(txt, reply_markup=InlineKeyboardMarkup(btn))
@@ -169,17 +193,16 @@ async def handle_settings_buttons(client, query: CallbackQuery):
     elif data.startswith("tutorial_"):
         which = "first" if data.endswith("1") else "second"
         settings["awaiting_input"] = {"type": "tutorial", "which": which}
-        await query.message.edit("SEND TUTORIAL LINK. /cancel to stop.")
+        await query.message.edit("SEND ME A TUTORIAL LINK.\n/cancel - CANCEL THIS PROCESS.")
 
     elif data == "del_tutorial":
         settings["tutorial_links"] = {}
-        await query.message.edit("✅ TUTORIAL LINKS CLEARED.",
+        await query.message.edit("✅ TUTORIAL LINKS DELETED.",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     elif data == "back_main":
         await settings_menu(client, query.message)
 
-# Handle text input after button triggers
 @Client.on_message(filters.private & filters.text)
 async def handle_inputs(client, message: Message):
     user_id = message.from_user.id
@@ -191,26 +214,29 @@ async def handle_inputs(client, message: Message):
 
     if text.lower() == "/cancel":
         settings["awaiting_input"] = None
-        return await message.reply("❌ CANCELLED.")
+        return await message.reply("❌ CANCELLED.\n<< BACK", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     if not state:
         return
 
     if state["type"] == "force_channel":
         settings["force_channels"] = text.split()
-        await message.reply("✅ CHANNELS SET.")
+        await message.reply("✅ FORCE CHANNELS SAVED.")
     elif state["type"] == "shortner":
         settings["shortlink"][state["which"]] = text
-        await message.reply(f"✅ SHORTNER {state['which']} SET.")
+        await message.reply(f"✅ SHORTNER {state['which']} SAVED.")
     elif state["type"] == "tutorial":
         settings["tutorial_links"][state["which"]] = text
-        await message.reply(f"✅ TUTORIAL {state['which']} SET.")
+        await message.reply(f"✅ TUTORIAL {state['which']} LINK SAVED.")
     elif state["type"] == "caption":
         settings["caption"] = text
-        await message.reply("✅ CAPTION SET.")
+        await message.reply("✅ CAPTION SAVED.")
     elif state["type"] == "max_results":
         if not text.isdigit():
-            return await message.reply("❌ INVALID. Please send a number.")
+            return await message.reply("❌ INVALID. Please enter a number.")
         settings["max_results"] = int(text)
-        await message.reply("✅ MAX RESULTS SET.")
+        await message.reply("✅ MAX RESULTS SAVED.")
+    elif state["type"] == "auto_delete_time":
+        settings["delete_time"] = text
+        await message.reply("✅ DELETE TIME SAVED.")
     settings["awaiting_input"] = None
