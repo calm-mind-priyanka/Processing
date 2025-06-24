@@ -1,13 +1,11 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-# Bot owner(s)
-BOT_OWNER = [6046055058]  # Add your Telegram user ID(s) here
+BOT_OWNER = [6046055058]  # Replace with your Telegram user ID
+user_settings = {}  # Temporary in-memory storage
 
-# Temporary in-memory settings per user
-user_settings = {}
 
-# /modify command in GROUP
+# /modify in group - sends PM button
 @Client.on_message(filters.command("modify") & filters.group)
 async def modify_group(client, message: Message):
     if message.from_user.id not in BOT_OWNER:
@@ -15,15 +13,13 @@ async def modify_group(client, message: Message):
     group_id = message.chat.id
     bot_username = (await client.get_me()).username
     button = [[
-        InlineKeyboardButton(
-            "⚠️ GO TO PRIVATE ⚠️",
-            url=f"https://t.me/{bot_username}?start=modify_{group_id}"
-        )
+        InlineKeyboardButton("⚠️ GO TO PRIVATE ⚠️", url=f"https://t.me/{bot_username}?start=modify_{group_id}")
     ]]
     await message.reply(
         "⚠️ ᴘʟᴇᴀꜱᴇ ᴏᴘᴇɴ ꜱᴇᴛᴛɪɴɢꜱ ᴍᴇɴᴜ ɪɴ ᴘʀɪᴠᴀᴛᴇ!!",
         reply_markup=InlineKeyboardMarkup(button)
     )
+
 
 # /start modify in PM
 @Client.on_message(filters.private & filters.command("start"))
@@ -41,9 +37,10 @@ async def start_handler(client, message: Message):
             group_title = "Unknown Group"
         await settings_menu(client, message, group_title, group_id)
     else:
-        await message.reply("Welcome! Please use /modify from a group to configure settings.")
+        await message.reply("Welcome! Use /modify from group to open settings.")
 
-# Settings menu with layout
+
+# Show settings menu
 async def settings_menu(client, message, group_title="N/A", group_id="N/A"):
     text = f"""👑 GROUP - {group_title}  
 🆔 ID - {group_id}  
@@ -64,12 +61,14 @@ SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
 
+
 # Close menu
 @Client.on_callback_query(filters.regex("close"))
 async def close_settings(client, query: CallbackQuery):
     await query.message.delete()
 
-# All button callbacks
+
+# Handle all button callbacks
 @Client.on_callback_query()
 async def handle_settings_buttons(client, query: CallbackQuery):
     user_id = query.from_user.id
@@ -107,7 +106,8 @@ async def handle_settings_buttons(client, query: CallbackQuery):
 
     elif data == "del_force_channel":
         settings["force_channels"] = []
-        await query.message.edit("✅ CHANNELS DELETED.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
+        await query.message.edit("✅ CHANNELS DELETED.",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     elif data == "max_results":
         settings["awaiting_input"] = {"type": "max_results"}
@@ -184,7 +184,8 @@ Current Mode: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}"""
 
     elif data == "del_shortner":
         settings["shortlink"] = {}
-        await query.message.edit("✅ SHORTNERS DELETED.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
+        await query.message.edit("✅ SHORTNERS DELETED.",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     elif data == "tutorial_link":
         tl = settings["tutorial_links"]
@@ -207,12 +208,14 @@ Current Mode: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}"""
 
     elif data == "del_tutorial":
         settings["tutorial_links"] = {}
-        await query.message.edit("✅ TUTORIAL LINKS DELETED.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
+        await query.message.edit("✅ TUTORIAL LINKS DELETED.",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("<< BACK", callback_data="back_main")]]))
 
     elif data == "back_main":
         await settings_menu(client, query.message)
 
-# Handle user input
+
+# Handle user input after button sets a flag
 @Client.on_message(filters.private & filters.text)
 async def handle_input(client, message: Message):
     user_id = message.from_user.id
