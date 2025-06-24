@@ -1,24 +1,29 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from config import BOT_OWNER  # Make sure your config file has BOT_OWNER = [123456789]
 
-# Temporary in-memory settings per user
+# Bot owner Telegram ID
+BOT_OWNER = [6046055058]
+
+# In-memory settings per user
 user_settings = {}
 
+# /modify command in private
 @Client.on_message(filters.command("modify") & filters.private)
 async def modify_private(client, message: Message):
     if message.from_user.id not in BOT_OWNER:
-        return await message.reply("You are not authorized to use this command.")
+        return await message.reply("🚫 You are not authorized.")
     await settings_menu(client, message)
 
+# /modify in group — redirects to PM
 @Client.on_message(filters.command("modify") & filters.group)
 async def modify_group(client, message: Message):
     if message.from_user.id not in BOT_OWNER:
         return
-    btn = [[InlineKeyboardButton("🤖 Open Settings in PM", url=f"https://t.me/{client.me.username}?start=modify")]]
-    await message.reply("⚙️ Please use this command in private chat.", reply_markup=InlineKeyboardMarkup(btn))
+    bot_username = (await client.get_me()).username
+    button = [[InlineKeyboardButton("⚙️ Open Settings in PM", url=f"https://t.me/{bot_username}?start=modify")]]
+    await message.reply("🔒 Please use this command in private chat.", reply_markup=InlineKeyboardMarkup(button))
 
-
+# Settings menu layout
 async def settings_menu(client, message):
     text = "**⚙️ CUSTOMIZE YOUR SETTINGS AS PER YOUR GROUP NEEDS ✨**"
     btn = [
@@ -36,12 +41,12 @@ async def settings_menu(client, message):
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
 
-
+# Close menu
 @Client.on_callback_query(filters.regex("close"))
 async def close_settings(client, query: CallbackQuery):
     await query.message.delete()
 
-
+# Handle all buttons
 @Client.on_callback_query()
 async def handle_settings_buttons(client, query: CallbackQuery):
     user_id = query.from_user.id
@@ -184,7 +189,7 @@ Current Mode: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}"""
     elif data == "back_main":
         await settings_menu(client, query.message)
 
-
+# Text input handler
 @Client.on_message(filters.private & filters.text)
 async def handle_input(client, message: Message):
     user_id = message.from_user.id
@@ -218,5 +223,4 @@ async def handle_input(client, message: Message):
             return await message.reply("Please enter a valid number.")
         settings["max_results"] = int(text)
         await message.reply("✅ MAX RESULTS SAVED.")
-
     settings["awaiting_input"] = None
