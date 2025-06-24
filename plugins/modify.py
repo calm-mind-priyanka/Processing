@@ -16,7 +16,7 @@ async def modify_group(client, message: Message):
     bot_username = (await client.get_me()).username
     button = [[
         InlineKeyboardButton(
-            "⚙️ GO TO PRIVATE ⚙️",
+            "⚠️ GO TO PRIVATE ⚠️",
             url=f"https://t.me/{bot_username}?start=modify_{group_id}"
         )
     ]]
@@ -59,7 +59,7 @@ SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
         [InlineKeyboardButton("🗂 FILES MODE", callback_data="file_mode"),
          InlineKeyboardButton("📝 FILES CAPTION", callback_data="caption")],
         [InlineKeyboardButton("🥁 TUTORIAL LINK", callback_data="tutorial_link"),
-         InlineKeyboardButton("🧷 SET SHORTLINK", callback_data="set_shortner")],
+         InlineKeyboardButton("🖇 SET SHORTLINK", callback_data="set_shortner")],
         [InlineKeyboardButton("‼️ CLOSE SETTINGS MENU ‼️", callback_data="close")]
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
