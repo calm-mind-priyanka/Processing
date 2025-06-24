@@ -18,7 +18,7 @@ SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
     btn = [
         [InlineKeyboardButton("👥 FORCE CHANNEL", callback_data="force_channel"),
          InlineKeyboardButton("ℹ️ MAX RESULTS", callback_data="max_results")],
-        [InlineKeyboardButton("満 IMDB", callback_data="imdb_toggle"),
+        [InlineKeyboardButton("🈵 IMDB", callback_data="imdb_toggle"),
          InlineKeyboardButton("🔍 SPELL CHECK", callback_data="spell_toggle")],
         [InlineKeyboardButton("🗑️ AUTO DELETE", callback_data="auto_delete"),
          InlineKeyboardButton("📚 RESULT MODE", callback_data="result_mode")],
