@@ -1,42 +1,65 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
-# Bot owner Telegram ID
-BOT_OWNER = [6046055058]
+# Bot owner(s)
+BOT_OWNER = [6046055058]  # Add your Telegram user ID(s) here
 
-# In-memory settings per user
+# Temporary in-memory settings per user
 user_settings = {}
 
-# /modify command in private
-@Client.on_message(filters.command("modify") & filters.private)
-async def modify_private(client, message: Message):
-    if message.from_user.id not in BOT_OWNER:
-        return await message.reply("🚫 You are not authorized.")
-    await settings_menu(client, message)
-
-# /modify in group — redirects to PM
+# /modify command in GROUP
 @Client.on_message(filters.command("modify") & filters.group)
 async def modify_group(client, message: Message):
     if message.from_user.id not in BOT_OWNER:
         return
+    group_id = message.chat.id
     bot_username = (await client.get_me()).username
-    button = [[InlineKeyboardButton("⚙️ Open Settings in PM", url=f"https://t.me/{bot_username}?start=modify")]]
-    await message.reply("🔒 Please use this command in private chat.", reply_markup=InlineKeyboardMarkup(button))
+    button = [[
+        InlineKeyboardButton(
+            "⚙️ GO TO PRIVATE ⚙️",
+            url=f"https://t.me/{bot_username}?start=modify_{group_id}"
+        )
+    ]]
+    await message.reply(
+        "⚠️ ᴘʟᴇᴀꜱᴇ ᴏᴘᴇɴ ꜱᴇᴛᴛɪɴɢꜱ ᴍᴇɴᴜ ɪɴ ᴘʀɪᴠᴀᴛᴇ!!",
+        reply_markup=InlineKeyboardMarkup(button)
+    )
 
-# Settings menu layout
-async def settings_menu(client, message):
-    text = "**⚙️ CUSTOMIZE YOUR SETTINGS AS PER YOUR GROUP NEEDS ✨**"
+# /start modify in PM
+@Client.on_message(filters.private & filters.command("start"))
+async def start_handler(client, message: Message):
+    user_id = message.from_user.id
+    if user_id not in BOT_OWNER:
+        return await message.reply("🚫 You are not authorized to use this bot.")
+
+    if len(message.command) > 1 and message.command[1].startswith("modify_"):
+        group_id = message.command[1].split("_", 1)[1]
+        try:
+            chat = await client.get_chat(int(group_id))
+            group_title = chat.title
+        except Exception:
+            group_title = "Unknown Group"
+        await settings_menu(client, message, group_title, group_id)
+    else:
+        await message.reply("Welcome! Please use /modify from a group to configure settings.")
+
+# Settings menu with layout
+async def settings_menu(client, message, group_title="N/A", group_id="N/A"):
+    text = f"""👑 GROUP - {group_title}  
+🆔 ID - {group_id}  
+
+SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
     btn = [
-        [InlineKeyboardButton("👥 FORCE CHANNEL", callback_data="force_channel")],
-        [InlineKeyboardButton("ℹ️ MAX RESULTS", callback_data="max_results"),
-         InlineKeyboardButton("🗑️ AUTO DELETE", callback_data="auto_delete")],
-        [InlineKeyboardButton("🈵 IMDB", callback_data="imdb_toggle"),
-         InlineKeyboardButton("🔎 SPELL CHECK", callback_data="spell_toggle")],
-        [InlineKeyboardButton("📚 RESULT MODE", callback_data="result_mode"),
-         InlineKeyboardButton("📦 FILE MODE", callback_data="file_mode")],
-        [InlineKeyboardButton("📝 CAPTION", callback_data="caption"),
-         InlineKeyboardButton("🪝 SET SHORTNER", callback_data="set_shortner")],
-        [InlineKeyboardButton("🥁 TUTORIAL LINK", callback_data="tutorial_link")],
+        [InlineKeyboardButton("👥 FORCE CHANNEL", callback_data="force_channel"),
+         InlineKeyboardButton("ℹ️ MAX RESULTS", callback_data="max_results")],
+        [InlineKeyboardButton("満 IMDB", callback_data="imdb_toggle"),
+         InlineKeyboardButton("🔍 SPELL CHECK", callback_data="spell_toggle")],
+        [InlineKeyboardButton("🗑️ AUTO DELETE", callback_data="auto_delete"),
+         InlineKeyboardButton("📚 RESULT MODE", callback_data="result_mode")],
+        [InlineKeyboardButton("🗂 FILES MODE", callback_data="file_mode"),
+         InlineKeyboardButton("📝 FILES CAPTION", callback_data="caption")],
+        [InlineKeyboardButton("🥁 TUTORIAL LINK", callback_data="tutorial_link"),
+         InlineKeyboardButton("🧷 SET SHORTLINK", callback_data="set_shortner")],
         [InlineKeyboardButton("‼️ CLOSE SETTINGS MENU ‼️", callback_data="close")]
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
@@ -46,7 +69,7 @@ async def settings_menu(client, message):
 async def close_settings(client, query: CallbackQuery):
     await query.message.delete()
 
-# Handle all buttons
+# All button callbacks
 @Client.on_callback_query()
 async def handle_settings_buttons(client, query: CallbackQuery):
     user_id = query.from_user.id
@@ -189,7 +212,7 @@ Current Mode: {'♻️ VERIFY' if new_mode == 'verify' else '📎 SHORTLINK'}"""
     elif data == "back_main":
         await settings_menu(client, query.message)
 
-# Text input handler
+# Handle user input
 @Client.on_message(filters.private & filters.text)
 async def handle_input(client, message: Message):
     user_id = message.from_user.id
