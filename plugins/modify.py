@@ -1,4 +1,3 @@
-
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
@@ -12,10 +11,10 @@ async def modify_command(client, message: Message):
     await settings_menu(client, message)
 
 async def settings_menu(client, message, group_title="YOUR GROUP", group_id="PRIVATE"):
-    text = f"""👑 GROUP - {group_title}  
+    text = f'''👑 GROUP - {group_title}  
 🆔 ID - {group_id}  
 
-SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
+SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…'''
     btn = [
         [InlineKeyboardButton("👥 FORCE CHANNEL", callback_data="force_channel"),
          InlineKeyboardButton("ℹ️ MAX RESULTS", callback_data="max_results")],
@@ -31,4 +30,4 @@ SELECT ONE OF THE SETTINGS THAT YOU WANT TO CHANGE ACCORDING TO YOUR GROUP…"""
     ]
     await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
 
-# This file includes the starting setup. Full logic continues in next parts and is assumed to be filled in as discussed.
+# Callback handling, reverse back logic, /cancel handling, and all buttons logic would continue below as discussed.
